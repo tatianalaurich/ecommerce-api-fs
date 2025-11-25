@@ -12,7 +12,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 
 app.get('/', (req, res) => {
-    res.send('API OK ✅ Usá /api/products y /api/carts');
+    res.send('API OK ✅ Usá /api/products y /api/carts/ID_DEL_CARRITO');
 });
 
 const PORT = 8080;
