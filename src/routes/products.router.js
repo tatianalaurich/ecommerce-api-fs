@@ -56,15 +56,18 @@ router.put('/:pid', async (req, res) => {
 
 router.delete('/:pid', async (req, res) => {
     try {
+        const deleted = await manager.deleteProduct(req.params.pid);
+
         const io = req.app.get('io');
         const allProducts = await manager.getProducts();
         io.emit('products:updated', allProducts);
 
-        res.json({ deleted: removed });
+        return res.json({ deleted });
     } catch (err) {
         const code = err.message.includes('no encontrado') ? 404 : 400;
-        res.status(code).json({ error: err.message });
+        return res.status(code).json({ error: err.message });
     }
 });
+
 
 export default router;
