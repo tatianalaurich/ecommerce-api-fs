@@ -1,0 +1,35 @@
+<h1>Realtime Products</h1>
+<p class="muted">Esta vista se actualiza automáticamente con WebSockets cuando se crean o eliminan productos.</p>
+
+<section>
+    <h3>Agregar producto (demo)</h3>
+    <form id="createForm">
+        <input name="title" placeholder="title" required />
+        <input name="description" placeholder="description" required />
+        <input name="code" placeholder="code único" required />
+        <input name="price" type="number" placeholder="price" required />
+        <input name="stock" type="number" placeholder="stock" required />
+        <input name="category" placeholder="category" required />
+        <input name="thumbnails" placeholder="thumbnails (coma separada)" />
+        <button type="submit">Crear</button>
+    </form>
+</section>
+
+<h3>Lista de productos</h3>
+<div id="list">
+    {{#if products.length}}
+        {{#each products}}
+        <div class="card" data-id="{{id}}">
+            <strong>{{title}}</strong> — ${{price}} — stock: {{stock}}
+            <div class="muted">{{description}}</div>
+            <div>id: <code>{{id}}</code></div>
+            <button class="deleteBtn" data-id="{{id}}">Eliminar</button>
+        </div>
+        {{/each}}
+    {{else}}
+        <p>No hay productos aún.</p>
+    {{/if}}
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realtime.js"></script>

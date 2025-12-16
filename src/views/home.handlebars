@@ -1,0 +1,17 @@
+<h1>Productos (Home)</h1>
+<p class="muted">Lista estática desde HTTP (refrescar para ver cambios)</p>
+
+{{#if products.length}}
+    {{#each products}}
+        <div class="card">
+        <strong>{{title}}</strong> — ${{price}} — stock: {{stock}} — code: {{code}}
+        <div class="muted">{{description}}</div>
+        <div>id: <code>{{id}}</code></div>
+        {{#if thumbnails.length}}
+            <div class="muted">thumbnails: {{thumbnails}}</div>
+        {{/if}}
+        </div>
+    {{/each}}
+    {{else}}
+    <p>No hay productos aún.</p>
+{{/if}}
