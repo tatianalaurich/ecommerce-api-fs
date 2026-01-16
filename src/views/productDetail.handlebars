@@ -1,0 +1,18 @@
+<h1>{{product.title}}</h1>
+
+<div class="card">
+    <p><strong>Precio:</strong> ${{product.price}}</p>
+    <p><strong>Stock:</strong> {{product.stock}}</p>
+    <p><strong>Categoría:</strong> {{product.category}}</p>
+    <p><strong>Status:</strong> {{product.status}}</p>
+    <p class="muted">{{product.description}}</p>
+
+    <p><strong>ID:</strong> <code>{{product._id}}</code></p>
+
+    <p class="muted">
+        Para agregar al carrito desde la vista, usá Postman:
+        <code>POST /api/carts/:cid/product/{{product._id}}</code>
+    </p>
+</div>
+
+<a href="/products">⬅ Volver</a>

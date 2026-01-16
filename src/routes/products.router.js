@@ -1,73 +1,115 @@
-import { Router } from 'express';
-import ProductManager from '../managers/ProductManager.js';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const manager = new ProductManager(resolve(__dirname, '../../data/products.json'));
+import { Router } from "express";
+import { ProductModel } from "../models/product.model.js";
 
 const router = Router();
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
     try {
-        const products = await manager.getProducts();
-        res.json(products);
+        const limit = Number(req.query.limit) || 10;
+        const page = Number(req.query.page) || 1;
+        const sort = req.query.sort; 
+        const query = req.query.query;
+
+        const filter = {};
+        if (query) {
+            if (query === "available") filter.status = true;
+            else if (query === "unavailable") filter.status = false;
+            else filter.category = query;
+        }
+
+        const options = { page, limit, lean: true };
+        if (sort === "asc") options.sort = { price: 1 };
+        if (sort === "desc") options.sort = { price: -1 };
+
+        const result = await ProductModel.paginate(filter, options);
+
+        const base = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
+        const makeLink = (p) => {
+            const params = new URLSearchParams();
+            params.set("limit", String(limit));
+            params.set("page", String(p));
+            if (sort) params.set("sort", sort);
+            if (query) params.set("query", query);
+            return `${base}?${params.toString()}`;
+        };
+
+    return res.json({
+        status: "success",
+        payload: result.docs,
+        totalPages: result.totalPages,
+        prevPage: result.prevPage,
+        nextPage: result.nextPage,
+        page: result.page,
+        hasPrevPage: result.hasPrevPage,
+        hasNextPage: result.hasNextPage,
+        prevLink: result.hasPrevPage ? makeLink(result.prevPage) : null,
+        nextLink: result.hasNextPage ? makeLink(result.nextPage) : null,
+        });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ status: "error", error: err.message });
     }
 });
 
-router.get('/:pid', async (req, res) => {
+router.get("/:pid", async (req, res) => {
     try {
-        const product = await manager.getProductById(req.params.pid);
-        if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
-        res.json(product);
+        const product = await ProductModel.findById(req.params.pid).lean();
+        if (!product) return res.status(404).json({ status: "error", error: "Producto no encontrado" });
+        return res.json({ status: "success", payload: product });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(400).json({ status: "error", error: err.message });
     }
 });
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
     try {
-        const created = await manager.addProduct(req.body);
-        const io = req.app.get('io');
-        const allProducts = await manager.getProducts();
-        io.emit('products:updated', allProducts);
+        const created = await ProductModel.create(req.body);
 
-        res.status(201).json(created);
+        const io = req.app.get("io");
+        if (io) {
+        const all = await ProductModel.find().lean();
+        io.emit("products:updated", all);
+        }
+
+        return res.status(201).json({ status: "success", payload: created });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        return res.status(400).json({ status: "error", error: err.message });
     }
 });
 
-router.put('/:pid', async (req, res) => {
+router.put("/:pid", async (req, res) => {
     try {
-        const updated = await manager.updateProduct(req.params.pid, req.body);
-        const io = req.app.get('io');
-        const allProducts = await manager.getProducts();
-        io.emit('products:updated', allProducts);
+        if ("_id" in req.body) delete req.body._id;
 
-        res.json(updated);
+        const updated = await ProductModel.findByIdAndUpdate(req.params.pid, req.body, { new: true }).lean();
+        if (!updated) return res.status(404).json({ status: "error", error: "Producto no encontrado" });
+
+        const io = req.app.get("io");
+        if (io) {
+        const all = await ProductModel.find().lean();
+        io.emit("products:updated", all);
+        }
+
+        return res.json({ status: "success", payload: updated });
     } catch (err) {
-        const code = err.message.includes('no encontrado') ? 404 : 400;
-        res.status(code).json({ error: err.message });
+        return res.status(400).json({ status: "error", error: err.message });
     }
 });
 
-router.delete('/:pid', async (req, res) => {
+router.delete("/:pid", async (req, res) => {
     try {
-        const deleted = await manager.deleteProduct(req.params.pid);
+        const deleted = await ProductModel.findByIdAndDelete(req.params.pid).lean();
+        if (!deleted) return res.status(404).json({ status: "error", error: "Producto no encontrado" });
 
-        const io = req.app.get('io');
-        const allProducts = await manager.getProducts();
-        io.emit('products:updated', allProducts);
+        const io = req.app.get("io");
+        if (io) {
+        const all = await ProductModel.find().lean();
+        io.emit("products:updated", all);
+        }
 
-        return res.json({ deleted });
+        return res.json({ status: "success", payload: deleted });
     } catch (err) {
-        const code = err.message.includes('no encontrado') ? 404 : 400;
-        return res.status(code).json({ error: err.message });
+        return res.status(400).json({ status: "error", error: err.message });
     }
 });
-
 
 export default router;
