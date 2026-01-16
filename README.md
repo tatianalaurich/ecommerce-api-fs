@@ -1,7 +1,7 @@
 # Ecommerce API FS 🛍️
 
-Servidor backend en **Node.js + Express** con persistencia en **filesystem (JSON)**.  
-Entrega N°1 y N°2 del curso de **Programación Backend I**.
+Servidor backend desarrollado con **Node.js y Express**, utilizando **MongoDB (Atlas)** como sistema de persistencia principal.  
+Proyecto correspondiente a la **Entrega Final** del curso **Programación Backend I – Coderhouse**.
 
 ## 🚀 Cómo ejecutar
 
@@ -11,25 +11,41 @@ Entrega N°1 y N°2 del curso de **Programación Backend I**.
     cd ecommerce-api-fs
 
 
-💻 Vistas con Handlebars y WebSockets
+💻 Vistas con Handlebars
 
-/home
-- Muestra una lista estática de productos (requiere refrescar la página para ver cambios).
+/products
+    Muestra todos los productos con: 
+        - paginación
+        - filtros
+        - ordenamiento por precio
+    Incluye botón “Agregar al carrito” directamente desde la lista.
 
-/realtimeproducts
-- Lista los productos en tiempo real usando Socket.IO:
-- Cuando se crea o elimina un producto, la lista se actualiza automáticamente.
-- Incluye un formulario para crear productos desde la propia vista.
+/products/:pid
+    Vista detalle del producto:
+        - descripción completa
+        - precio
+        - categoría
+        - botón Agregar al carrito
+
+/carts/:cid
+    - Muestra un carrito específico
+    - Lista únicamente los productos pertenecientes a ese carrito (con populate)
+Para la demostración del botón “Agregar al carrito” se utiliza un cartId fijo generado previamente.
+
 
 🧠 Tecnologías utilizadas
 
 - Node.js
 - Express
+- MongoDB + Mongoose
+- mongoose-paginate-v2
 - Express-Handlebars
 - Socket.IO
-- FileSystem (persistencia con JSON)
+- JavaScript
+
 
 ✨ Autor
 
 Tatiana Laurich 
 📅 Curso de Programación Backend – Coderhouse
+
