@@ -17,8 +17,11 @@
         <strong>{{title}}</strong> — ${{price}} — stock: {{stock}} — cat: {{category}}
         <div class="muted">{{description}}</div>
 
-        <div style="margin-top:8px;">
+        <div style="margin-top:8px; display:flex; gap:10px; align-items:center;">
             <a href="/products/{{_id}}">Ver detalle</a>
+
+            <button class="addToCartBtn" data-pid="{{_id}}">Agregar al carrito</button>
+            <span class="muted" data-msg="{{_id}}"></span>
         </div>
         </div>
     {{/each}}
@@ -37,3 +40,31 @@
         <a href="/products?page={{nextPage}}&limit={{limit}}&sort={{sort}}&query={{query}}">Next ➡</a>
     {{/if}}
 </div>
+
+<script>
+    const CART_ID = "PEGÁ_ACÁ_TU_CART_ID";
+
+    document.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".addToCartBtn");
+        if (!btn) return;
+
+        if (!CART_ID || CART_ID.includes("PEGÁ_ACÁ")) {
+        alert("Te falta pegar el CART_ID en index.handlebars (CART_ID = ...).");
+        return;
+        }
+
+        const pid = btn.dataset.pid;
+        const msgEl = document.querySelector(`[data-msg="${pid}"]`);
+        if (msgEl) msgEl.textContent = "Agregando...";
+
+        const res = await fetch(`/api/carts/${CART_ID}/product/${pid}`, { method: "POST" });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+        if (msgEl) msgEl.textContent = "❌ " + (data.error || "Error");
+        return;
+        }
+
+        if (msgEl) msgEl.textContent = "✅ Agregado";
+    });
+</script>
