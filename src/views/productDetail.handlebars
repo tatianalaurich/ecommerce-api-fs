@@ -1,18 +1,19 @@
-<h1>{{product.title}}</h1>
+<button id="addToCartBtn" data-pid="{{product._id}}">Agregar al carrito</button>
+<p class="muted" id="msg"></p>
 
-<div class="card">
-    <p><strong>Precio:</strong> ${{product.price}}</p>
-    <p><strong>Stock:</strong> {{product.stock}}</p>
-    <p><strong>Categoría:</strong> {{product.category}}</p>
-    <p><strong>Status:</strong> {{product.status}}</p>
-    <p class="muted">{{product.description}}</p>
+<script>
+    const CART_ID = "PEGÁ_ACÁ_TU_CART_ID";
+    const btn = document.getElementById("addToCartBtn");
+    const msg = document.getElementById("msg");
 
-    <p><strong>ID:</strong> <code>{{product._id}}</code></p>
-
-    <p class="muted">
-        Para agregar al carrito desde la vista, usá Postman:
-        <code>POST /api/carts/:cid/product/{{product._id}}</code>
-    </p>
-</div>
-
-<a href="/products">⬅ Volver</a>
+    btn.addEventListener("click", async () => {
+        const pid = btn.dataset.pid;
+        const res = await fetch(`/api/carts/${CART_ID}/product/${pid}`, { method: "POST" });
+        const data = await res.json().catch(()=>({}));
+        if (!res.ok) {
+        msg.textContent = "Error: " + (data.error || "No se pudo agregar");
+        return;
+        }
+        msg.textContent = "✅ Agregado al carrito";
+    });
+</script>

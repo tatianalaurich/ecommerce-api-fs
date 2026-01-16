@@ -4,6 +4,10 @@ import { CartModel } from "../models/cart.model.js";
 
 const router = Router();
 
+router.get("/home", (req, res) => {
+    res.redirect("/products");
+});
+
 router.get("/products", async (req, res) => {
     const limit = Number(req.query.limit) || 10;
     const page = Number(req.query.page) || 1;
@@ -34,20 +38,32 @@ router.get("/products", async (req, res) => {
         nextPage: result.nextPage,
         limit,
         sort,
-        query,
+        query
     });
 });
 
 router.get("/products/:pid", async (req, res) => {
     const product = await ProductModel.findById(req.params.pid).lean();
     if (!product) return res.status(404).send("Producto no encontrado");
-    res.render("productDetail", { title: product.title, product });
+
+    res.render("productDetail", {
+        title: product.title,
+        product
+    });
 });
 
 router.get("/carts/:cid", async (req, res) => {
-    const cart = await CartModel.findById(req.params.cid).populate("products.product").lean();
+    const cart = await CartModel.findById(req.params.cid)
+        .populate("products.product")
+        .lean();
+
     if (!cart) return res.status(404).send("Carrito no encontrado");
-    res.render("cartDetail", { title: "Carrito", cart });
+
+    res.render("cartDetail", {
+        title: "Carrito",
+        cart
+    });
 });
 
 export default router;
+

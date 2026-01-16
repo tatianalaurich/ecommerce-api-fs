@@ -113,4 +113,11 @@ router.delete("/:cid", async (req, res) => {
     }
 });
 
+router.get("/", (req, res) => {
+    res.json({
+        status: "success",
+        message: "Usá POST /api/carts para crear y GET /api/carts/:cid para ver un carrito"
+    });
+});
+
 export default router;
