@@ -1,7 +1,9 @@
-# Ecommerce API FS 🛍️
+# Ecommerce API 🛍️
 
-Servidor backend desarrollado con **Node.js y Express**, utilizando **MongoDB (Atlas)** como sistema de persistencia principal.  
-Proyecto correspondiente a la **Entrega Final** del curso **Programación Backend I – Coderhouse**.
+API backend desarrollada con Node.js y Express, utilizando MongoDB como base de datos.
+
+Entrega final del curso Programación Backend I – Coderhouse.
+
 
 ## 🚀 Cómo ejecutar
 
