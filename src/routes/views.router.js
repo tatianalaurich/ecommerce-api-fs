@@ -1,4 +1,5 @@
 import { Router } from "express";
+import mongoose from "mongoose";
 import { ProductModel } from "../models/product.model.js";
 import { CartModel } from "../models/cart.model.js";
 
@@ -53,7 +54,13 @@ router.get("/products/:pid", async (req, res) => {
 });
 
 router.get("/carts/:cid", async (req, res) => {
-    const cart = await CartModel.findById(req.params.cid)
+    const { cid } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+        return res.status(400).send("CID inválido. Pegá un id real de MongoDB.");
+    }
+
+    const cart = await CartModel.findById(cid)
         .populate("products.product")
         .lean();
 
@@ -64,6 +71,7 @@ router.get("/carts/:cid", async (req, res) => {
         cart
     });
 });
+
 
 export default router;
 
