@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
     console.log("Cliente conectado:", socket.id);
 });
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 await connectDB();
 

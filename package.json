@@ -12,10 +12,10 @@
   "author": "Tatiana Laurich",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.2.4",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
-    "mongoose": "^9.1.4",
+    "mongoose": "^9.2.1",
     "mongoose-paginate-v2": "^1.9.1",
     "socket.io": "^4.8.1"
   },
